@@ -708,7 +708,7 @@ function buildCard(id,branch,clickable){
  const isDeceased=!!p.dead;
  let html=`<div class="card${isDeceased?" deceased":""}${canClick?" clickable":""}" ${canClick?`onclick="navigate('${id}')" onkeydown="if(event.key==='Enter')navigate('${id}')" tabindex="0" role="button" aria-label="Voir la famille de ${p.n}"`:""}>`;
  if(canClick)html+=`<span class="card-arrow" aria-hidden="true">›</span>`;
- html+=`<div class="avatar" style="background:${av.bg};color:${av.txt}">${initials(p.n)}</div>`;
+ html+=`<div class="avatar-wrap"><img class="avatar-photo" src="Photos/${id}.jpg" alt="${p.n}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="avatar" style="background:${av.bg};color:${av.txt};display:none">${initials(p.n)}</div></div>`;
  html+=`<div class="card-name">${p.n}${isDeceased&&!p.n.includes("†")?" †":""}</div>`;
  let dates="";
  if(p.b&&p.d)dates=`${p.b} – ${p.d}`;
