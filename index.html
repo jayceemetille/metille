@@ -159,6 +159,32 @@
   #login-err {color:#c0392b;font-size:0.8rem;margin-top:0.6rem;min-height:1.2em}
   #login-hint {font-size:0.72rem;color:var(--gray);margin-top:1rem;font-style:italic}
 
+
+  /* ── Lightbox photo ── */
+  #lightbox{
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,.85);z-index:99998;
+    display:none;align-items:center;justify-content:center;
+    cursor:pointer;
+  }
+  #lightbox.open{display:flex;}
+  #lightbox img{
+    max-width:90vw;max-height:85vh;
+    border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.5);
+    object-fit:contain;
+  }
+  #lightbox-caption{
+    position:fixed;bottom:30px;left:0;width:100%;
+    text-align:center;color:#fff;font-family:Georgia,serif;
+    font-size:1rem;text-shadow:0 1px 4px rgba(0,0,0,.8);
+  }
+  #lightbox-close{
+    position:fixed;top:20px;right:24px;
+    color:#fff;font-size:2rem;cursor:pointer;
+    background:none;border:none;line-height:1;
+    text-shadow:0 1px 4px rgba(0,0,0,.8);
+  }
+
 </style>
 </head>
 <body>
@@ -710,7 +736,7 @@ function buildCard(id,branch,clickable){
  const isDeceased=!!p.dead;
  let html=`<div class="card${isDeceased?" deceased":""}${canClick?" clickable":""}" ${canClick?`onclick="navigate('${id}')" onkeydown="if(event.key==='Enter')navigate('${id}')" tabindex="0" role="button" aria-label="Voir la famille de ${p.n}"`:""}>`;
  if(canClick)html+=`<span class="card-arrow" aria-hidden="true">›</span>`;
- html+=`<div class="avatar-wrap"><img class="avatar-photo" src="Photos/${id}.jpg" alt="${p.n}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;object-position:top center;display:block;flex-shrink:0" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="avatar" style="background:${av.bg};color:${av.txt};display:none">${initials(p.n)}</div></div>`;
+ html+=`<div class="avatar-wrap"><img class="avatar-photo" src="Photos/${id}.jpg" alt="${p.n}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;object-position:top center;display:block;flex-shrink:0;cursor:zoom-in" onclick="event.stopPropagation();openLightbox('Photos/${id}.jpg',this.alt)" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="avatar" style="background:${av.bg};color:${av.txt};display:none">${initials(p.n)}</div></div>`;
  html+=`<div class="card-name">${p.n}${isDeceased&&!p.n.includes("†")?" †":""}</div>`;
  let dates="";
  if(p.b&&p.d)dates=`${p.b} – ${p.d}`;
@@ -1058,6 +1084,30 @@ ${buildContext()}`;
     this.style.height=Math.min(this.scrollHeight,100)+'px';
   });
 })();
+
+
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLightbox()">
+  <button id="lightbox-close" onclick="closeLightbox()">×</button>
+  <img id="lightbox-img" src="" alt=""/>
+  <div id="lightbox-caption"></div>
+</div>
+<script>
+function openLightbox(src, name){
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox-caption').textContent = name;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightbox-img').src = '';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e){
+  if(e.key==='Escape') closeLightbox();
+});
+</script>
 
 </body>
 </html>
