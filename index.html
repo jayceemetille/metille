@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arbre Généalogique · Famille Métille</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --cream:#FDFAF4;--brown:#2C1A0E;--gold:#B8892A;--gold-light:#F5EDD6;
+    --gray:#6B6660;--gray-light:#F0EDE8;--border:#E2DDD6;--white:#FFFFFF;
+    --shadow:0 2px 12px rgba(44,26,14,0.08);
+  }
+  body{background:var(--cream);color:var(--brown);font-family:'Georgia',serif;min-height:100vh}
+  #app{max-width:960px;margin:0 auto;padding:2rem 1.5rem 4rem}
+
+  /* Header */
+  .site-header{text-align:center;padding:2rem 0 2.5rem;border-bottom:1px solid var(--border);margin-bottom:2.5rem}
+  .site-header h1{font-size:2rem;font-weight:400;letter-spacing:0.04em;color:var(--brown)}
+  .site-header p{font-size:0.85rem;color:var(--gray);margin-top:0.4rem;font-style:italic}
+  .gold-line{width:60px;height:2px;background:var(--gold);margin:1rem auto 0}
+
+  /* Nav */
+  .nav-bar{display:flex;align-items:center;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap}
+  .back-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-family:inherit;font-size:0.8rem;color:var(--gray);cursor:pointer;display:flex;align-items:center;gap:4px}
+  .back-btn:hover{border-color:var(--gold);color:var(--brown)}
+  .home-btn{background:none;border:none;font-family:inherit;font-size:0.8rem;color:var(--gold);cursor:pointer;text-decoration:underline;padding:0}
+  .breadcrumb{font-size:0.8rem;color:var(--gray);display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+  .breadcrumb .crumb{cursor:pointer;color:var(--gray)}
+  .breadcrumb .crumb:hover{color:var(--brown)}
+  .breadcrumb .sep{color:var(--border)}
+  .breadcrumb .current{color:var(--brown);font-weight:600}
+  .branch-pill{display:inline-block;font-size:0.75rem;padding:3px 12px;border-radius:20px;font-family:sans-serif;font-weight:600;letter-spacing:0.04em}
+
+  /* Section labels */
+  .section-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--gray);font-family:sans-serif;margin:2rem 0 1rem;font-weight:600}
+  .divider{border:none;border-top:1px solid var(--border);margin:1.5rem 0}
+
+  /* Couple layout */
+  .couple-wrap{display:grid;grid-template-columns:1fr 48px 1fr;gap:12px;align-items:start;max-width:640px}
+  .union-sym{display:flex;align-items:center;justify-content:center;padding-top:36px;font-size:1.2rem;color:var(--gold)}
+  .single-wrap{max-width:280px}
+
+  /* Person card */
+  .card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:16px 14px;position:relative;transition:border-color 0.15s,transform 0.1s}
+  .card.clickable{cursor:pointer}
+  .card.clickable:hover{border-color:var(--gold);transform:translateY(-2px)}
+  .card.deceased{background:var(--gray-light);border-color:#DDD8D0}
+  .card-arrow{position:absolute;top:12px;right:12px;font-size:1rem;color:var(--gold);opacity:0.7}
+  .avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:700;font-family:sans-serif;margin-bottom:12px;letter-spacing:0.02em}
+  .card-name{font-size:0.95rem;font-weight:600;line-height:1.35;margin-bottom:4px}
+  .card-dates{font-size:0.75rem;color:var(--gray);margin-bottom:4px;font-family:sans-serif}
+  .card-job{font-size:0.75rem;color:var(--gray);font-style:italic;margin-bottom:8px;line-height:1.4}
+  .card-contact{font-size:0.7rem;color:var(--gray);line-height:1.8;font-family:sans-serif;border-top:1px solid var(--border);padding-top:8px;margin-top:6px}
+  .card-contact a{color:var(--gold);text-decoration:none}
+  .card-contact a:hover{text-decoration:underline}
+  .card-nav{font-size:0.7rem;color:var(--gold);font-family:sans-serif;margin-top:8px;font-weight:600}
+
+  /* Children grid */
+  .children-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+
+  /* Home page */
+  .home-intro{text-align:center;margin-bottom:2.5rem}
+  .home-intro p{font-size:0.9rem;color:var(--gray);line-height:1.8;max-width:560px;margin:0.5rem auto 0}
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:2.5rem}
+  .stat-box{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+  .stat-num{font-size:1.8rem;font-weight:400;color:var(--brown);line-height:1}
+  .stat-label{font-size:0.7rem;color:var(--gray);font-family:sans-serif;margin-top:4px;text-transform:uppercase;letter-spacing:0.08em}
+  .branches-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  .branch-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:18px;cursor:pointer;transition:border-color 0.15s,transform 0.1s}
+  .branch-card:hover{transform:translateY(-2px)}
+  .branch-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;font-family:sans-serif;margin-bottom:12px}
+  .branch-name{font-size:1rem;font-weight:600;margin-bottom:3px}
+  .branch-dates{font-size:0.75rem;color:var(--gray);margin-bottom:4px;font-family:sans-serif}
+  .branch-desc{font-size:0.72rem;color:var(--gray);font-family:sans-serif;font-style:italic}
+  .branch-link{font-size:0.72rem;font-family:sans-serif;font-weight:700;margin-top:10px}
+  .founders{display:grid;grid-template-columns:1fr 48px 1fr;gap:12px;align-items:start;max-width:520px;margin:0 auto}
+  .note{font-size:0.75rem;color:var(--gray);font-style:italic;background:var(--gold-light);border-left:3px solid var(--gold);padding:8px 12px;border-radius:0 6px 6px 0;margin-top:1rem;font-family:sans-serif}
+
+  /* ── Responsive tablette (max 768px) ── */
+  @media(max-width:768px){
+    #app{padding:1.5rem 1rem 5rem}
+    .stats-row{grid-template-columns:repeat(2,1fr);gap:8px}
+    .branches-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+    .children-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+    .couple-wrap{max-width:100%}
+  }
+  /* ── Responsive mobile (max 480px) ── */
+  @media(max-width:480px){
+    #app{padding:1rem 0.75rem 5rem}
+    .site-header{padding:1.2rem 0 1.5rem;margin-bottom:1.5rem}
+    .site-header h1{font-size:1.35rem;letter-spacing:0.02em}
+    .site-header p{font-size:0.78rem}
+    .nav-bar{gap:6px;margin-bottom:1rem}
+    .back-btn{padding:5px 10px;font-size:0.75rem}
+    .breadcrumb{font-size:0.72rem}
+    .stats-row{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1.5rem}
+    .stat-num{font-size:1.4rem}
+    .stat-box{padding:12px 8px}
+    .branches-grid{grid-template-columns:1fr 1fr;gap:8px}
+    .branch-card{padding:12px}
+    .branch-icon{width:34px;height:34px;font-size:0.85rem;margin-bottom:8px}
+    .branch-name{font-size:0.88rem}
+    .couple-wrap{grid-template-columns:1fr;gap:0;max-width:100%}
+    .union-sym{padding:6px 0 6px 20px;font-size:1rem;justify-content:flex-start}
+    .single-wrap{max-width:100%}
+    .founders{grid-template-columns:1fr;gap:0;max-width:100%}
+    .card{padding:12px;border-radius:10px}
+    .card-name{font-size:0.88rem}
+    .card-dates,.card-job{font-size:0.7rem}
+    .card-contact{font-size:0.67rem}
+    .avatar-wrap,.avatar{width:40px;height:40px;margin-bottom:8px}
+    .avatar-photo{width:40px;height:40px}
+    .children-grid{grid-template-columns:1fr 1fr;gap:8px}
+    .section-label{margin:1.2rem 0 0.7rem;font-size:0.65rem}
+    #chat-win{width:calc(100vw - 16px);right:8px;bottom:80px;border-radius:12px}
+    #chat-fab{bottom:16px;right:16px;width:50px;height:50px}
+    #chat-messages{max-height:45vh}
+  }
+  /* ── Très petits écrans (max 360px) ── */
+  @media(max-width:360px){
+    .branches-grid{grid-template-columns:1fr}
+    .children-grid{grid-template-columns:1fr}
+  }
+  @media print{
+    .back-btn,.home-btn,.site-header{display:none}
+    #chat-fab,#chat-win{display:none!important}
+    body{background:white}
+  }
+
+  /* ── Écran de connexion ── */
+  #login-screen {
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    background:var(--cream);z-index:99999;
+    display:flex;align-items:center;justify-content:center;
+  }
+  #login-box {
+    background:#fff;border:1px solid var(--border);border-radius:16px;
+    padding:2.5rem 2rem;max-width:380px;width:90%;text-align:center;
+    box-shadow:0 8px 40px rgba(44,26,14,0.12);
+  }
+  #login-box h2 {font-size:1.4rem;font-weight:400;color:var(--brown);margin-bottom:0.3rem}
+  #login-box p  {font-size:0.82rem;color:var(--gray);font-style:italic;margin-bottom:1.5rem}
+  .gold-line-login{width:40px;height:2px;background:var(--gold);margin:0.8rem auto 1.5rem}
+  #login-pwd {
+    width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;
+    font-size:1rem;font-family:inherit;outline:none;margin-bottom:0.8rem;
+    text-align:center;letter-spacing:0.1em;
+  }
+  #login-pwd:focus{border-color:var(--gold);}
+  #login-btn {
+    width:100%;padding:10px;background:var(--gold);color:#fff;border:none;
+    border-radius:8px;font-size:0.95rem;cursor:pointer;font-family:inherit;
+    transition:opacity .2s;
+  }
+  #login-btn:hover{opacity:.88}
+  #login-err {color:#c0392b;font-size:0.8rem;margin-top:0.6rem;min-height:1.2em}
+  #login-hint {font-size:0.72rem;color:var(--gray);margin-top:1rem;font-style:italic}
+
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div id="login-box">
+    <h2>Famille Métille</h2>
+    <p>Arbre généalogique · depuis 1872</p>
+    <div class="gold-line-login"></div>
+    <input id="login-pwd" type="password" placeholder="Mot de passe" 
+           onkeydown="if(event.key==='Enter')checkPwd()"/>
+    <button id="login-btn" onclick="checkPwd()">Accéder à l'arbre</button>
+    <div id="login-err"></div>
+    <div id="login-hint">Contactez Jean-Claude pour obtenir le mot de passe</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const HASH = '58b7a067ecb8e920f77d59d06933838a24efed2973d36451a3a6e9d4d6383451';
+  
+  async function sha256(msg){
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+
+  // Vérifier si déjà connecté
+  if(sessionStorage.getItem('metille_auth')==='ok'){
+    document.getElementById('login-screen').style.display='none';
+  }
+
+  window.checkPwd = async function(){
+    const pwd = document.getElementById('login-pwd').value;
+    const hash = await sha256(pwd);
+    if(hash === HASH){
+      sessionStorage.setItem('metille_auth','ok');
+      document.getElementById('login-screen').style.display='none';
+    } else {
+      document.getElementById('login-err').textContent='Mot de passe incorrect. Réessayez.';
+      document.getElementById('login-pwd').value='';
+      document.getElementById('login-pwd').focus();
+    }
+  };
+})();
+</script>
+
+<div id="app">
+  <header class="site-header">
+    <h1>Famille Métille</h1>
+    <p>Arbre généalogique · Rémy &amp; Lina Métille · depuis 1872</p>
+    <div class="gold-line"></div>
+  </header>
+  <div id="root"></div>
+</div>
+
+<script>
+const P={
+ remy1:{n:"Rémy Métille",b:"02.10.1872",d:"10.04.1934",job:"Agriculteur",adr:"La Charmillotte, 2886 Epiquerez",g:"M",dead:1},
+ lina:{n:"Lina née Süss",b:"03.01.1880",d:"03.1954",g:"F",dead:1},
+ ernest:{n:"Ernest Métille",b:"05.08.1905",d:"04.08.1986",job:"Marchand de bétail",adr:"Porrentruy",g:"M",dead:1},
+ berthe:{n:"Berthe Nussbaum",b:"18.01.1917",d:"02.1997",g:"F",dead:1},
+ anna:{n:"Anna Métille",b:"14.01.1907",d:"14.02.1993",job:"Agricultrice",adr:"La Cernie",g:"F",dead:1},
+ henry_sr:{n:"Henry Marchand",b:"04.07.1901",d:"16.12.1994",g:"M",dead:1},
+ walter:{n:"Walter Métille",b:"14.06.1908",d:"24.02.1979",job:"Agriculteur",adr:"La Charmillotte",g:"M",dead:1},
+ julia:{n:"Julia Beuchat",b:"19.10.1912",d:"29.12.2004",g:"F",dead:1},
+ max:{n:"Max Métille",b:"23.07.1909",d:"15.05.1995",job:"Agriculteur",adr:"La Charmillotte",g:"M",dead:1},
+ jeanne:{n:"Jeanne Maître",b:"08.02.1913",d:"22.05.1998",g:"F",dead:1},
+ fritz:{n:"Fritz Métille",b:"29.04.1916",d:"07.2001",job:"Agriculteur",adr:"La Charmillotte",g:"M",dead:1},
+ brigitte_fr:{n:"Brigitte Buchwalder",b:"20.10.1918",d:"22.03.1992",g:"F",dead:1},
+ jean_sr:{n:"Jean Métille",b:"02.05.1919",d:"17.11.1961",job:"Restaurateur",adr:"Le Col des Roches",g:"M",dead:1},
+ alice:{n:"Alice Köppel",b:"01.07.1921",d:"03.06.1988",g:"F",dead:1},
+ willy_sr:{n:"Willy Métille",b:"13.08.1921",d:"25.12.1965",job:"Marchand de bétail",adr:"Montignez",g:"M",dead:1},
+ lili:{n:"Marie \"Lili\" Maître",b:"04.12.1924",d:"08.04.2016",g:"F",dead:1},
+ remy2:{n:"Rémy Métille",b:"02.10.1938",job:"Marchand de bétail",adr:"Imp Condemenne 5, 2915 Bure",tel:"032 466 52 54",g:"M"},
+ rosemarie:{n:"Rose-Marie Gassmann",b:"17.02.1939",job:"Empl. de bétail",g:"F"},
+ judith:{n:"Judith Métille †",b:"14.09.1941",d:"19.10.2021",job:"Création",adr:"2800 Delémont",g:"F",dead:1},
+ henri_v:{n:"Henri Viatte †",b:"02.12.1940",d:"27.02.2025",job:"Horlogerie",tel:"795406591",g:"M",dead:1},
+ jean2:{n:"Jean Métille",b:"20.08.1944",job:"Enseignant",adr:"Rte de Giez 19, 1422 Tuilleries-de-Grandson",tel:"024 445 35 27",g:"M"},
+ marlyse:{n:"Marlyse Germiquet",b:"28.06.1943",job:"(divorcés)",g:"F"},
+ christine_l:{n:"Christine Leu",b:"17.11.1955",job:"2ème épouse",g:"F"},
+ marcel:{n:"Marcel Métille",b:"13.10.1947",job:"Mécanicien",adr:"Thaïlande",g:"M"},
+ saiyud:{n:"Saiyud Yoksant",b:"13.04.1967",g:"F"},
+ lucien:{n:"Lucien Métille",b:"11.08.1953",job:"Ag. Assurance",adr:"Aubépines 43, 2906 Chevenez",tel:"079 206 10 10",g:"M"},
+ armande:{n:"Armande Morosini",b:"28.12.1956",job:"Conjointe",g:"F"},
+ rolf:{n:"Rolf Marchand †",b:"14.04.1932",d:"27.09.2019",g:"M",dead:1},
+ brigitte_al:{n:"Brigitte Aliesch",b:"13.02.1955",adr:"rue Vendeline 148, 2944 Bonfol",g:"F"},
+ henry_m:{n:"Henri Marchand †",b:"24.04.1939",d:"22.09.2021",job:"Foyer",g:"M",dead:1},
+ elisabeth:{n:"Elisabeth Stadelmann-Marchand",b:"04.11.1940",job:"Agricultrice",adr:"Grandgiéron 13, 2883 Montmelon",tel:"032 426 65 28",g:"F"},
+ joseph_st:{n:"Joseph Stadelmann †",b:"28.11.1930",d:"12.12.2020",g:"M",dead:1},
+ willy_m:{n:"Willy Marchand",b:"11.06.1942",job:"Agriculteur",adr:"Cernie-Dessus 27, 2888 Seleute",tel:"032 461 33 92",g:"M"},
+ mt_guerdat:{n:"Marie-Thérèse Guerdat",b:"03.07.1954",g:"F"},
+ madeleine_m:{n:"Madeleine Jeannerat-Marchand",b:"13.10.1943",job:"Agricultrice",adr:"Au Village 18B, 2886 Epiquerez",tel:"032 955 12 29",g:"F"},
+ jeanpaul_j:{n:"Jean-Paul Jeannerat †",b:"07.10.1936",d:"13.09.2024",g:"M",dead:1},
+ andre_m:{n:"André Marchand †",b:"23.06.1945",d:"04.11.1970",job:"Bûcheron",g:"M",dead:1},
+ lilianne_mt:{n:"Lilianne Montavon-Marchand",b:"12.03.1947",job:"Ménagère",adr:"Rte Principale 118, 2857 Montavon",tel:"032 426 51 27",g:"F"},
+ roger_mt:{n:"Roger Montavon",b:"17.04.1945",job:"Mécanicien-étampeur",g:"M"},
+ rene_m:{n:"René Marchand",b:"14.08.1948",job:"Agriculteur",adr:"Au Village 7, 2888 Seleute",tel:"032 461 31 40",g:"M"},
+ josianne:{n:"Josianne Maillard",b:"17.03.1953",g:"F"},
+ jeanpierre:{n:"Jean-Pierre Métille †",b:"25.04.1939",d:"29.04.2013",job:"Agriculteur",adr:"La Charmillotte / Bassecourt",g:"M",dead:1},
+ verene:{n:"Vérène Maître †",b:"01.06.1942",d:"03.09.2019",g:"F",dead:1},
+ irene:{n:"Irène Noirat-Métille",b:"06.10.1943",job:"Agricultrice",adr:"Les Rouges-Terres 93, 2360 Le Bémont",tel:"767011973",g:"F"},
+ raphael_n:{n:"Raphaël Noirat",b:"23.01.1942",g:"M"},
+ jacqueline:{n:"Jacqueline Wermeille-Métille †",b:"09.04.1941",d:"17.08.2022",job:"Agricultrice",adr:"2942 Alle",g:"F",dead:1},
+ andre_w:{n:"André Wermeille †",b:"25.05.1936",d:"25.05.2015",g:"M",dead:1},
+ madeleine_w:{n:"Madeleine Wermeille-Métille",b:"22.04.1943",job:"Agricultrice",adr:"L'Erveratte, 2942 Alle",tel:"032 471 27 15",g:"F"},
+ fernand:{n:"Fernand Wermeille",b:"19.07.1932",g:"M"},
+ mt_mamie:{n:"Marie-Thérèse Mamie",b:"10.02.1946",job:"Secrétaire",adr:"Maichières 12, 2830 Courrendlin",tel:"032 435 61 67",email:"marietherese.mamie46@gmail.com",g:"F"},
+ gerard_mamie:{n:"Gérard Mamie †",b:"14.05.1944",d:"14.09.2024",job:"Comptable",g:"M",dead:1},
+ joseph:{n:"Joseph Métille",b:"20.04.1946",job:"Agriculteur",adr:"Place du 23 Juin 31, 2362 Montfaucon",tel:"032 955 11 50",g:"M"},
+ annemarie:{n:"Anne-Marie Farine",b:"06.01.1944",job:"Vendeuse",g:"F"},
+ pierre:{n:"Pierre Métille †",b:"11.06.1947",d:"28.07.2008",job:"Tech. commercial",adr:"Develier",g:"M",dead:1},
+ paulette:{n:"Paulette Aubry (ex-épouse) †",b:"16.09.1944",d:"05.11.2017",g:"F",dead:1},
+ mariejeanne:{n:"Marie-Jeanne Carnal",b:"08.06.1952",job:"Vendeuse (2ème épouse)",adr:"2740 Moutier",g:"F"},
+ michel:{n:"Michel Métille",b:"14.09.1949",job:"Agriculteur",adr:"La Lomène 2, 2882 St. Ursanne",tel:"032 461 36 64",g:"M"},
+ helene:{n:"Hélène Braîchet",b:"22.12.1948",g:"F"},
+ jeanmarie:{n:"Jean-Marie Métille",b:"28.05.1952",job:"Concierge",adr:"Rte des Rangiers 104, 2882 St. Ursanne",tel:"078 400 70 52",email:"jm.metille@gmail.com",g:"M"},
+ yvonne:{n:"Yvonne Dubail",b:"09.10.1954",job:"Cuisinière",tel:"032 461 31 95",g:"F"},
+ gerard_m:{n:"Gérard Métille",b:"03.12.1958",job:"Cons. en Personnel",adr:"rue Primevères 3, 2830 Courrendlin",tel:"032 435 62 29",email:"gerard.metille@bluewin.ch",g:"M"},
+ monique:{n:"Monique Theurillat",b:"10.06.1956",job:"Empl. bureau",g:"F"},
+ liliane_sch:{n:"Liliane Schaffner-Métille",b:"27.09.1946",job:"Empl. commerce",adr:"Rossfeld 28, 3960 Sierre",tel:"027 455 06 14",g:"F"},
+ hermann:{n:"Hermann Schaffner",b:"10.02.1939",job:"Empl. commerce",g:"M"},
+ mt_suppi:{n:"Marie-Thérèse Suppi-Métille",b:"30.10.1950",job:"Représentante",adr:"Rue de Glarey 33, 3960 Sierre",tel:"079 366 79 76",g:"F"},
+ michel_suppi:{n:"Michel Suppi",job:"(divorcé)",g:"M"},
+ danielle:{n:"Danielle Tscherry-Métille",b:"22.07.1952",job:"Restauratrice (retraitée)",adr:"ch. du Soleil 19, 1907 Saxon",tel:"079 301 28 47",g:"F"},
+ leo:{n:"Léo Tscherry",b:"09.10.1952",job:"Retraité",g:"M"},
+ jeanclaude:{n:"Jean-Claude Métille",b:"23.05.1954",job:"Ing. Médias",adr:"Ch. du Crêt 15, 1083 Mézières",tel:"021 903 23 18 / 079 276 35 73",g:"M"},
+ daniele:{n:"Danièle Frei-Métille",b:"09.02.1958",job:"Laborantine",g:"F"},
+ francine:{n:"Françine Métille",b:"22.02.1948",job:"Enseignante",adr:"Tisserands 8, 2900 Porrentruy",tel:"032 466 44 86",g:"F"},
+ josette:{n:"Josette Martin-Métille",b:"23.05.1949",job:"Empl. banque",adr:"Prés Ruatte 13, 2924 Montignez",g:"F"},
+ claude_martin:{n:"Claude Martin Willy",b:"23.05.1947",job:"Resp. atelier",adr:"2924 Montignez",tel:"032 461 75 06",email:"claudy.zozo@bluewin.ch",g:"M"},
+ claudine_b:{n:"Claudine Bélet-Métille",b:"27.10.1958",job:"Empl. commerce",adr:"Rte de Fontenais 67, 2900 Porrentruy",tel:"032 466 35 83",g:"F"},
+ pierre_b:{n:"Pierre Bélet",b:"10.04.1956",job:"Indépendant (Etanor)",g:"M"},
+ frederic:{n:"Frédéric Métille",b:"28.07.1962",job:"Mécanicien",adr:"Champs St.Martin 25, 2942 Alle",tel:"079 338 19 80",g:"M"},
+ katia:{n:"Katia Zurcher-Métille",b:"30.11.1969",job:"Empl. commerce",adr:"Ziegelmatt 42, 4457 Diegten",g:"F"},
+ nadia:{n:"Nadia Viatte",b:"17.05.1964",job:"Thérapeute",adr:"Baulacre 28, 1202 Genève",tel:"079 711 16 85",g:"F"},
+ carole:{n:"Carole Raingeard-Viatte",b:"17.05.1965",job:"Empl. commerce",adr:"Rte du Vorbourg 48, 2800 Delémont",g:"F"},
+ michel_r:{n:"Michel Raingeard",b:"09.01.1965",job:"(divorcés)",g:"M"},
+ jacques:{n:"Jacques Métille",b:"05.11.1971",job:"Educateur",adr:"1400 Yverdon",tel:"076 322 11 15",g:"M"},
+ stephanie_c:{n:"Stéphanie Carey",b:"28.02.1979",job:"(divorcés)",g:"F"},
+ thomas_m2:{n:"Thomas Métille",b:"26.08.1973",job:"Psychomotricien",adr:"1400 Yverdon",g:"M"},
+ auguste:{n:"Auguste Métille",b:"23.08.1995",job:"Entrepreneur",adr:"1000 Lausanne",tel:"079 812 85 82",g:"M"},
+ stephanie_l:{n:"Stéphanie Lommano-Métille",b:"02.11.1971",job:"Coiffeuse",adr:"Vieux Moulin 23, 2852 Courtételle",tel:"078 739 96 93",email:"stephaniel71@bluewin.ch",g:"F"},
+ claudio_l:{n:"Claudio Lommano",b:"03.09.1974",job:"Horloger rhabilleur",g:"M"},
+ david:{n:"David Métille",b:"05.01.1973",job:"Avocat",adr:"Av. Gare 23, 1000 Lausanne",g:"M"},
+ julien_m:{n:"Julien Métille",b:"04.04.1979",job:"Graphiste",adr:"Nord 129, 2300 La Chaux-de-Fonds",g:"M"},
+ nicolas:{n:"Nicolas Métille",b:"18.11.1980",g:"M"},
+ charlotte_br:{n:"Charlotte Brahier †",d:"01.2021",g:"F",dead:1},
+ johannes:{n:"Johannes Marchand †",b:"13.08.1976",d:"08.11.2020",job:"Menuisier",g:"M",dead:1},
+ liliane_c:{n:"Liliane Cattin-Marchand",b:"16.09.1979",job:"Coiffeuse",adr:"Chem. des Noz 24, 2942 Alle",tel:"032 471 32 66",g:"F"},
+ jean_c:{n:"Jean Cattin",b:"20.06.1977",g:"M"},
+ christina:{n:"Christina Marchand",b:"14.02.1981",adr:"2800 Porrentruy",g:"F"},
+ michele:{n:"Michèle Monnerat-Stadelmann",b:"24.07.1963",job:"Restauratrice",adr:"2854 Bassecourt",g:"F"},
+ pierreandre:{n:"Pierre-André Monnerat",b:"09.08.1958",job:"Empl. CFF",g:"M"},
+ colette:{n:"Colette Villard-Stadelmann",b:"11.10.1964",job:"Vendeuse",adr:"Côte Champs Françon 4, 2942 Alle",tel:"032 471 25 76",g:"F"},
+ pierre_st:{n:"Pierre Stadelmann",b:"31.01.1959",job:"Agent de Police",tel:"079 368 27 84",g:"M"},
+ josy_st:{n:"Josy Stadelmann",b:"02.12.1968",job:"Boucher",adr:"Fontaines 22, 2952 Cornol",tel:"032 462 22 28",g:"M"},
+ nadine_st:{n:"Nadine Stadelmann-Cerf",b:"26.12.1966",job:"Vendeuse",g:"F"},
+ christine_st:{n:"Christine Stadelmann",b:"28.08.1967",adr:"Bevaix",g:"F"},
+ philippe_g:{n:"Philippe Gerber",b:"1966",g:"M"},
+ remy_st:{n:"Rémy Stadelmann",b:"15.05.1966",job:"Agriculteur",adr:"Grandgiéron 13, 2883 Montmelon",tel:"032 426 65 28",g:"M"},
+ myriam_st:{n:"Myriam Stadelmann-Migy",b:"12.04.1973",job:"Boulangère",g:"F"},
+ celine_p:{n:"Céline Paupe-Marchand",b:"22.09.1973",job:"Agricultrice",adr:"Rte Cantonale 17, 2884 Montenol",tel:"032 461 32 48",g:"F"},
+ pascal_p:{n:"Pascal Paupe",b:"03.02.1968",job:"Agriculteur",g:"M"},
+ anne_m:{n:"Anne Di Vita-Marchand",b:"15.12.1974",job:"Enseign. secondaire",adr:"Rue de la Poste, 2952 Cornol",tel:"032 467 15 37",g:"F"},
+ leo_dv:{n:"Léo Di Vita",g:"M"},
+ ludivine:{n:"Ludivine Marchand",b:"22.03.1978",job:"Empl. commerce",adr:"Chez la Jeanne, 2885 Epauvillers",g:"F"},
+ claude_piq:{n:"Claude Piquerez",g:"M"},
+ chloe:{n:"Chloée Marchand",b:"01.12.1984",job:"Agricultrice",adr:"Cernie-Dessus, 2888 Seleute",g:"F"},
+ alisee:{n:"Alisée Marchand",b:"29.07.1987",job:"Bibliothécaire",adr:"Genève",g:"F"},
+ thomas_marc:{n:"Thomas Marchand",b:"10.07.1996",job:"Agriculteur",adr:"La Cernie-Dessus 27, 2888 Seleute",g:"M"},
+ jeanbaptiste:{n:"Jean-Baptiste Jeannerat",b:"07.01.1974",job:"Agriculteur",adr:"Au Village 18, 2886 Epiquerez",tel:"032 955 10 50",g:"M"},
+ celine_jb:{n:"Céline Jeannerat-Beuchat",b:"29.11.1976",job:"Enseignante",g:"F"},
+ sophie_j:{n:"Sophie Jeannerat",b:"08.06.1978",job:"Aide Pharmacie",adr:"Neuchâtel",g:"F"},
+ christian_j:{n:"Christian Jeannerat-Meyer",g:"M"},
+ patricia:{n:"Patricia Mahler-Montavon",b:"07.01.1971",job:"Employée",adr:"Rue de la Deute 11, 2855 Glovelier",tel:"032 426 48 22",g:"F"},
+ sebastien_mah:{n:"Sébastien Mahler",b:"22.12.1974",g:"M"},
+ sandra_mait:{n:"Sandra Maître-Montavon",b:"18.03.1972",job:"Empl. commerce",adr:"Rte Principale 48 C, 2856 Boécourt",tel:"032 426 54 93",g:"F"},
+ josue:{n:"Josué Maître",b:"01.07.1976",g:"M"},
+ maryline_m:{n:"Maryline Montavon †",b:"04.02.1980",d:"12.03.1981",g:"F",dead:1},
+ fabrice_mt:{n:"Fabrice Montavon",b:"30.08.1983",job:"Poly-mécanicien",adr:"2854 Bassecourt",g:"M"},
+ christelle_g:{n:"Christelle Girardin-Marchand",b:"31.05.1975",job:"Empl. postal",adr:"Rue des Prés 5, 2855 Glovelier",tel:"032 426 54 41",g:"F"},
+ fabrice_g:{n:"Fabrice Girardin",b:"26.07.1971",g:"M"},
+ sylvie_a:{n:"Sylvie Aemisegger-Marchand",b:"26.11.1976",job:"Aide médicale",adr:"rue La Tuillerie 18, 2852 Courtételle",tel:"032 423 28 32",g:"F"},
+ jeanmarc_a:{n:"Jean-Marc Aemisegger",b:"08.10.1975",job:"Carreleur",g:"M"},
+ sandrine_c:{n:"Sandrine Crevoiserat-Marchand",b:"02.09.1979",job:"Secrétaire",adr:"Sur La Combe 257, 2932 Coeuve",tel:"032 462 13 56",g:"F"},
+ raphael_c:{n:"Raphaël Crevoiserat",b:"14.12.1977",job:"Gérant magasin",g:"M"},
+ ludovic_m:{n:"Ludovic Marchand",b:"08.01.1982",job:"Mécanicien",adr:"2888 Seleute",g:"M"},
+ veronique_m:{n:"Véronique Marchand",b:"22.06.1977",job:"Ass. Ophtalmo",g:"F"},
+ claudine_m:{n:"Claudine Métille",b:"10.09.1964",job:"Empl. commerce",adr:"Rue de l'école 12, 2923 Courtemaîche",g:"F"},
+ sylvie_b:{n:"Sylvie Barthe-Métille †",b:"20.02.1968",d:"26.02.2017",job:"Boulanger-confiseur",g:"F",dead:1},
+ joel_b:{n:"Joël Barthe",b:"27.06.1965",g:"M"},
+ noel:{n:"Noël Métille",b:"05.12.1969",job:"Mont. électricien",adr:"Impasse du Fostet 2, 1552 Trey VD",tel:"032 426 71 32",g:"M"},
+ veronique_g:{n:"Véronique Gaertner-Métille",b:"14.05.1969",job:"Infirmière",tel:"079 356 41 19",g:"F"},
+ hugues:{n:"Hugues Noirat",b:"15.07.1967",job:"Opérateur CN",adr:"Gruère 17, 2726 Saignelégier",g:"M"},
+ blandine_i:{n:"Blandine Noirat-Idat",b:"24.07.1972",job:"Vendeuse",g:"F"},
+ fabrice_n:{n:"Fabrice Noirat",b:"09.08.1968",job:"Chauffagiste",adr:"Imp. En Cortio 1, 2853 Courfaivre",tel:"032 426 82 03",g:"M"},
+ jocelyne_n:{n:"Jocelyne Noirat-Broquet",b:"15.04.1972",job:"Empl. commerce",g:"F"},
+ jacinthe:{n:"Jacinthe Noirat",b:"19.11.1973",job:"Cheffe de vente",adr:"Au Village 6.A, 2400 Le Locle",g:"F"},
+ francois_n:{n:"François Noirat",b:"11.09.1976",job:"Mécanicien auto",adr:"Les Rouges-Terres 93, 2360 Le Bémont",tel:"079 280 36 38",g:"M"},
+ selina:{n:"Sélina Noirat-Farine",b:"11.06.1980",job:"Agricultrice",g:"F"},
+ alain_w:{n:"Alain Wermeille",b:"25.07.1964",job:"Agriculteur",adr:"Coinat d'Essertiau 25, 2942 Alle",tel:"032 471 14 84",g:"M"},
+ muriel:{n:"Muriel Rondez-Wermeille",b:"15.08.1973",job:"Cuisinière",adr:"2952 Cornol",g:"F"},
+ denis_w:{n:"Denis Wermeille",b:"10.06.1965",job:"Mont. Electricien",adr:"En Chésal 15, 2943 Vendlincourt",tel:"032 474 42 25",g:"M"},
+ maryline_w:{n:"Maryline Wermeille-Christe",b:"02.01.1968",job:"Charcutière",g:"F"},
+ eric_w:{n:"Eric Wermeille",b:"15.09.1968",job:"Agent de Prison",adr:"Ch. des Noz 2, 2942 Alle",tel:"079 542 21 47",g:"M"},
+ ruth_l:{n:"Ruth Leuenberger",b:"22.09.1972",job:"Secrétaire (sep. 2019)",g:"F"},
+ danielle_bw:{n:"Danielle Bourgnon-Wermeille",b:"17.07.1967",job:"Coiffeuse",adr:"L'Everatte 4, 2942 Alle",tel:"032 471 19 06",g:"F"},
+ patrick_bw:{n:"Patrick Bourgnon",b:"03.03.1966",job:"Chauffeur",g:"M"},
+ sylvain_w:{n:"Sylvain Wermeille",b:"23.05.1970",job:"Electricien",adr:"Pré du Moulin 9, 2942 Alle",tel:"032 471 35 00",g:"M"},
+ patricia_wm:{n:"Patricia Wermeille-Montavon",b:"09.04.1969",job:"Horlogère",g:"F"},
+ corinne_mm:{n:"Corinne Montavon-Mamie",b:"18.02.1970",job:"Enseignante",adr:"Raisse 19, 2855 Glovelier",tel:"032 426 85 33",g:"F"},
+ paul_mt:{n:"Paul Montavon",b:"02.03.1968",job:"Garagiste",g:"M"},
+ serge_mamie:{n:"Serge Mamie",b:"18.01.1974",job:"Ingénieur Elec.",adr:"Es-Bellieges 11, 2825 Courchapoix",tel:"032 438 88 65",g:"M"},
+ sandrine_mn:{n:"Sandrine Neuenschwander-Mamie",b:"27.06.1973",job:"Secrétaire",g:"F"},
+ eric_m:{n:"Eric Métille",b:"23.05.1971",job:"Facteur",adr:"Adrien-Lachenal 21, 1290 Versoix",g:"M"},
+ roseli:{n:"Roseli Bailly-Métille",b:"05.02.1983",job:"Ménagère",g:"F"},
+ julien_m2:{n:"Julien Métille",b:"17.10.1976",job:"Méc. de précision",adr:"Ch. de la Dolaise 230, 2362 Montfaucon",tel:"032 961 20 36",g:"M"},
+ severine:{n:"Séverine D'Amico-Métille",b:"24.12.1975",job:"Empl. commerce",g:"F"},
+ marieeve:{n:"Marie-Eve Stücki-Métille",b:"26.09.1977",job:"Coiffeuse",adr:"Rte de Certoux, 1961 Perly",g:"F"},
+ raphael_s:{n:"Raphaël Stucki",b:"22.12.1977",job:"Garde-frontière",g:"M"},
+ daniel:{n:"Daniel Métille",b:"11.10.1970",adr:"Kirghizistan",tel:"+41 76 671 68 57",g:"M"},
+ christelle_m:{n:"Christelle Métille †",b:"24.06.1976",d:"23.09.2009",job:"Graphiste",g:"F",dead:1},
+ sebastien_m:{n:"Sébastien Métille",b:"01.04.1979",job:"Cuisinier",adr:"Avenir 10, 2854 Bassecourt",tel:"079 859 01 74",g:"M"},
+ zineb:{n:"Zineb Taleb",b:"01.11.1984",job:"Aide soignante (ex-épouse)",g:"F"},
+ jose:{n:"José Métille",b:"08.03.1974",job:"Agriculteur",adr:"La Lomène 2, 2882 St. Ursanne",g:"M"},
+ sandra_jose:{n:"Sandra Métille (ex-épouse)",job:"Maman de Nolan et Lola",g:"F"},
+ cosette:{n:"Cosette Métille-Houlmann",b:"01.06.1976",job:"Aide familiale",adr:"Moulin des Lavoirs 1, 2882 St. Ursanne",tel:"032 461 30 79",g:"F"},
+ damien_h:{n:"Damien Houlmann",b:"19.03.1971",job:"(ex-époux)",g:"M"},
+ claude_marc:{n:"Claude Marchand",b:"12.11.1969",job:"Agriculteur (conjoint)",adr:"Monturban, 2889 Ocourt",g:"M"},
+ frederic_m2:{n:"Frédéric Métille",b:"01.05.1979",job:"Forêt. Bûcheron",adr:"Sur Prègne 92, 2885 Epauvillers",g:"M"},
+ cindy_j:{n:"Cindy Jousset-Métille",b:"08.07.1988",job:"Aide soignante",g:"F"},
+ nathalie_ex:{n:"Nathalie Métille",b:"10.05.1974",job:"(ex-épouse)",g:"F"},
+ alain_m:{n:"Alain Métille",b:"24.02.1976",job:"Monteur",adr:"2854 Bassecourt",g:"M"},
+ sylvie_f:{n:"Sylvie Métille-Flückiger",b:"20.05.1977",job:"Astrologue",adr:"Amandiers 1, 2000 Neuchâtel",g:"F"},
+ dominique_f:{n:"Dominique Flückiger",b:"04.07.1974",g:"M"},
+ richard:{n:"Richard Métille †",b:"18.07.1978",d:"10.02.1997",job:"Méc. auto",g:"M",dead:1},
+ viviane:{n:"Viviane Cerf-Métille",b:"07.12.1979",job:"Formatrice",adr:"Champs du Chêne 7, 2950 Courtemautruy",g:"F"},
+ bertrand:{n:"Bertrand Cerf",b:"20.02.1974",job:"Agent technique",g:"M"},
+ sylvain_m2:{n:"Sylvain Métille",b:"16.06.1980",job:"Avocat",adr:"Sumont 21, 1030 Bussigny",g:"M"},
+ corinne_j:{n:"Corinne Métille-Jörg",b:"22.01.1979",job:"Empl. commerce",g:"F"},
+ marc_s:{n:"Marc Schaffner",b:"20.08.1967",job:"Physicien",adr:"Ch. du Joran 18, 2000 Neuchâtel",tel:"032 725 20 08",g:"M"},
+ valerie_s:{n:"Valérie Schaffner-Gougler",b:"20.08.1969",job:"Secrétaire commerciale",g:"F"},
+ stephane_s:{n:"Stéphane Suppi",b:"22.02.1977",job:"Educateur spéc.",adr:"Rte de Crête-Nanchen 6, 3977 Granges",tel:"079 419 01 17",g:"M"},
+ anya:{n:"Anya Kohler-Suppi",b:"31.05.1983",job:"Psychologue",g:"F"},
+ cynthia:{n:"Cynthia Suppi-Costa",b:"22.05.1979",job:"Mass. Thérapeute",adr:"Rte de Sierre 20, 3972 Miège",tel:"079 893 10 28",g:"F"},
+ andre_ct:{n:"André Costa Trindade",b:"09.09.1994",job:"Mass. Thérapeute",tel:"077 467 39 09",g:"M"},
+ oliver:{n:"Oliver Tscherry",b:"07.08.1981",job:"Entrep. Immobilier",adr:"Rue Place 26, 1955 Chamoson",g:"M"},
+ ludmilla:{n:"Ludmilla Tscherry",b:"13.07.1990",job:"Educatrice Enf.",g:"F"},
+ mikael:{n:"Mikaël Tscherry",b:"01.07.1986",job:"Entrep. Immobilier",adr:"Rue Plane-Ville 21, 1955 Chamoson",g:"M"},
+ vittoria:{n:"Vittoria Tscherry",b:"28.05.1991",job:"Educatr. Sociale",g:"F"},
+ aurelie:{n:"Aurélie Métille",b:"04.09.1995",job:"Educ. Enfance",adr:"Ch. Champ-Perrin 7, 1030 Bussigny",tel:"079 616 72 90",g:"F"},
+ willy_martin:{n:"Willy Martin",b:"26.04.1968",job:"Professeur",adr:"champ des Rochets, 2952 Cornol",tel:"032 462 32 27",g:"M"},
+ carine_b:{n:"Carine Buda-Martin",b:"14.09.1969",job:"Maîtresse école enf.",g:"F"},
+ celine_riat:{n:"Céline Riat-Martin",b:"16.02.1972",job:"Laborantine",adr:"Tilleuls 11, 2802 Develier",tel:"032 422 08 55",g:"F"},
+ jacques_riat:{n:"Jacques Riat",b:"21.10.1969",job:"Ing. génie civil",g:"M"},
+ gilles_martin:{n:"Gilles Martin",b:"22.07.1973",job:"Ing. génie civil",adr:"Rues des Berges 33, 1530 Payerne",g:"M"},
+ estelle_b:{n:"Estelle Babey-Martin",b:"22.05.1973",job:"Pharmacienne",g:"F"},
+ fanny:{n:"Fanny De Slovere-Bélet",b:"09.02.1984",job:"Enseignante prim.",adr:"2825 Courchapoix",g:"F"},
+ tom_ds:{n:"Tom De Slovere",b:"08.09.1979",g:"M"},
+ renaud:{n:"Renaud Bélet",b:"18.06.1986",job:"Res. Etanor",adr:"2900 Porrentruy",g:"M"},
+ justine:{n:"Justine Juillerat-Bélet",b:"30.04.1989",g:"F"},
+ lilou:{n:"Lilou Raingeard",b:"03.04.2001",g:"F"},
+ pierrot:{n:"Pierrot Métille",b:"30.10.2004",job:"Informaticien",g:"M"},
+ leon:{n:"Léon Métille",b:"26.08.2006",g:"M"},
+ ermeline:{n:"Ermeline Métille",b:"04.05.2009",g:"F"},
+ luana_l:{n:"Luana Lommano",b:"09.02.2006",g:"F"},
+ maeva_l:{n:"Maeva Lommano",b:"07.02.2008",g:"F"},
+ lorelie:{n:"Loréleï Brahier",g:"F"},
+ lizea:{n:"Lizéa Brahier",g:"F"},
+ romane:{n:"Romane Cattin",b:"02.10.2009",g:"F"},
+ clement:{n:"Clément Cattin",b:"01.01.2012",g:"M"},
+ noah_c:{n:"Noah Cattin",b:"26.04.2014",g:"M"},
+ romain_mn:{n:"Romain Monnerat",b:"19.09.1997",g:"M"},
+ cindy_mn:{n:"Cindy Monnerat",b:"27.02.1999",g:"F"},
+ ophelie:{n:"Ophélie Monnerat",b:"12.07.1995",g:"F"},
+ thibault_w:{n:"Thibault Wermeille",b:"01.08.1999",job:"Ingénieur Inform.",g:"M"},
+ laure_w:{n:"Laure Wermeille",b:"10.05.2001",job:"Etudiante Social",g:"F"},
+ amelie_w:{n:"Amélie Wermeille",b:"31.01.1997",job:"Assistante Sociale",g:"F"},
+ jeremy_w:{n:"Jérémy Wermeille",b:"09.02.2000",job:"Polymécanicien",g:"M"},
+ luana_w:{n:"Luana Wermeille",b:"23.12.1999",job:"Laborantine",g:"F"},
+ nicola_w:{n:"Nicola Wermeille",b:"09.05.2002",job:"Polymécanicien",g:"M"},
+ meryl_w:{n:"Méryl Wermeille",b:"17.04.2002",job:"Etude d'enseignant",g:"F"},
+ elodie_w:{n:"Elodie Wermeille",b:"05.08.2006",job:"App. Menuisière",g:"F"},
+ fanny_mt:{n:"Fanny Montavon",b:"04.08.1997",job:"Bachelor Tourisme",g:"F"},
+ gaetan_mt:{n:"Gaëtan Montavon",b:"29.04.1999",job:"Ing. technique auto",g:"M"},
+ juliette_mt:{n:"Juliette Montavon",b:"07.02.2002",job:"Graphiste & Polydesigner 3D",g:"F"},
+ nina_mamie:{n:"Nina Mamie",b:"09.10.2004",g:"F"},
+ killian_mamie:{n:"Killian Mamie",b:"06.06.2007",g:"M"},
+ loic_m:{n:"Loïc Métille",b:"11.05.2003",g:"M"},
+ yann_m:{n:"Yann Métille",b:"15.11.2004",g:"M"},
+ arwen:{n:"Arwen Métille",b:"12.12.2007",g:"F"},
+ eowyn:{n:"Eowyn Métille",b:"26.04.2016",g:"F"},
+ tommy:{n:"Tommy Métille",b:"21.06.2002",g:"M"},
+ lea_m:{n:"Léa Métille",b:"25.05.2007",g:"F"},
+ laura_st:{n:"Laura Stucki",b:"10.07.2004",g:"F"},
+ alyssa_st:{n:"Alyssa Stucki",b:"18.02.2006",g:"F"},
+ marilie:{n:"Marilie Métille",b:"30.01.2000",job:"Pâtissière",g:"F"},
+ lorine:{n:"Lorine Métille",b:"12.07.2001",job:"Univ. Droit",g:"F"},
+ natean:{n:"Natéan Métille",b:"10.06.2009",g:"M"},
+ isaline:{n:"Isaline Métille",b:"24.02.2013",g:"F"},
+ ocean:{n:"Océane Noirat",b:"12.11.1998",g:"F"},
+ alizee_n:{n:"Alizée Noirat",b:"20.08.2002",g:"F"},
+ manon_n:{n:"Manon Noirat",b:"07.03.1998",g:"F"},
+ loris_n:{n:"Loris Noirat",b:"19.08.2000",g:"M"},
+ antoine_n:{n:"Antoine Noirat",b:"24.05.2012",g:"M"},
+ leyla_n:{n:"Leyla Noirat",b:"12.12.2013",g:"F"},
+ gwenaelle:{n:"Gwenaëlle Jeannerat",b:"28.11.2003",g:"F"},
+ elios:{n:"Elios Jeannerat",b:"28.07.2005",g:"M"},
+ robin:{n:"Robin Jeannerat",b:"08.11.2007",g:"M"},
+ tiago:{n:"Tiago Jeannerat",b:"21.04.2012",g:"M"},
+ sacha:{n:"Sacha Jeannerat",b:"22.01.2016",g:"M"},
+ camille_p:{n:"Camille Paupe",b:"25.10.1996",g:"F"},
+ joel_p:{n:"Joël Paupe",b:"01.06.2000",g:"M"},
+ tobias:{n:"Tobias Di Vita",b:"14.06.2005",g:"M"},
+ colin:{n:"Colin Di Vita",b:"26.11.2007",g:"M"},
+ clementine:{n:"Clémentine Di Vita",b:"23.11.2011",g:"F"},
+ melitine:{n:"Mélitine Marchand",b:"25.12.2013",g:"F"},
+ matthieu:{n:"Matthieu Marchand",b:"26.10.2016",g:"M"},
+ jasmine:{n:"Jasmine Schaffner",b:"20.10.1998",g:"F"},
+ ludovic_s:{n:"Ludovic Schaffner",b:"07.05.2001",g:"M"},
+ simon_s:{n:"Simon Suppi",b:"14.12.2017",g:"M"},
+ celien_s:{n:"Célien Suppi",b:"09.03.2022",g:"M"},
+ anael:{n:"Anaël Costa Trindade",b:"23.01.2020",g:"F"},
+ romy_t:{n:"Romy Tscherry",b:"11.04.2023",g:"F"},
+ arthur_m:{n:"Arthur Métille",b:"13.11.2016",g:"M"},
+ loic_mt:{n:"Loïc Martin",b:"22.04.1992",job:"Enseignant",g:"M"},
+ lionel_martin:{n:"Lionel Martin",b:"01.08.1994",job:"Economiste",g:"M"},
+ sofia_martin:{n:"Sofia Martin",b:"20.08.2024",g:"F"},
+ morane_martin:{n:"Morane Martin",b:"26.10.1996",g:"F"},
+ elise_martin:{n:"Elise Martin",b:"14.11.1998",job:"Ecole d'Arts",g:"F"},
+ theo_riat:{n:"Théo Riat",b:"05.12.1998",job:"Science Politique",g:"M"},
+ noe_riat:{n:"Noé Riat",b:"27.11.2002",job:"Agent d'exploitation",g:"M"},
+ bruno_riat:{n:"Bruno Riat",b:"14.09.2006",g:"M"},
+ malo_martin:{n:"Malo Martin",b:"18.03.2004",g:"M"},
+ gael_martin:{n:"Gael Martin",b:"20.09.2005",g:"M"},
+ juliette_ds:{n:"Juliette De Slovere",b:"20.12.2016",g:"F"},
+ lucie_ds:{n:"Lucie De Slovere",b:"20.02.2019",g:"F"},
+ merlin_j:{n:"Merlin Juillerat",b:"03.05.2019",g:"M"},
+ thomas_m3:{n:"Thomas Métille",b:"20.06.1999",g:"M"},
+ david_m2:{n:"David Métille",b:"22.10.2002",g:"M"},
+ noe_f:{n:"Noé Flückiger",b:"09.06.2011",g:"M"},
+ jonas_f:{n:"Jonas Flückiger",b:"08.11.2013",g:"M"},
+ marcie:{n:"Marcie Cerf",b:"14.01.2002",g:"F"},
+ evan_m:{n:"Evan Métille",b:"09.11.2007",g:"M"},
+ rayan_m:{n:"Rayan Métille",b:"10.02.2012",g:"M"},
+ nolan:{n:"Nolan Métille",b:"17.08.2004",job:"Apprenti agricole",g:"M"},
+ lola:{n:"Lola Métille",b:"01.08.2007",g:"F"},
+ charlene_h:{n:"Charlène Houlmann",b:"22.07.1995",job:"Serveuse",adr:"Tavannes",g:"F"},
+ julien_g:{n:"Julien Grandjean",b:"19.07.1988",job:"Electricien",g:"M"},
+ cedric_h:{n:"Cédric Houlmann",b:"07.07.1997",job:"Forêt. Bûcheron",adr:"Indevillers F",g:"M"},
+ patrice_h:{n:"Patrice Houlmann",b:"03.06.2003",job:"Cuisinier",adr:"St. Ursanne",g:"M"},
+ loris_m2:{n:"Loris Métille",b:"11.01.2002",job:"App. Electricien",g:"M"},
+ shanna:{n:"Shanna Métille",b:"01.02.2008",g:"F"},
+ danny_st:{n:"Danny Stadelmann",b:"14.04.1987",g:"M"},
+ gaetan_st:{n:"Gaëtan Stadelmann",b:"29.12.1989",g:"M"},
+ jennifer_st:{n:"Jennifer Stadelmann-Etienne",b:"06.04.1991",g:"F"},
+ yann_st:{n:"Yann Stadelmann",b:"12.09.1992",g:"M"},
+ marion_st:{n:"Marion Stadelmann",g:"F"},
+ meygan:{n:"Meygan Gerber",b:"03.07.1992",g:"F"},
+ jeremy_st:{n:"Jérémy Stadelmann",b:"06.10.1995",g:"M"},
+ aurelie_st:{n:"Aurélie Stadelmann",b:"07.11.1998",g:"F"},
+ audrey_v:{n:"Audrey Zamble Bie Villard",b:"01.05.1988",g:"F"},
+ jacques_z:{n:"Jacques Zamble Bie",b:"09.02.1986",g:"M"},
+ tiffany_v:{n:"Tiffany Villard",b:"04.07.1991",g:"F"},
+ syrielle:{n:"Syrielle Mahler",b:"29.08.2002",g:"F"},
+ ionas:{n:"Ionas Mahler",b:"27.05.2004",g:"M"},
+ candice:{n:"Candice Mahler",b:"30.12.2007",g:"F"},
+ rayan_mait:{n:"Rayan Maître",b:"22.02.2002",g:"M"},
+ elodie_mait:{n:"Elodie Maître",b:"20.12.2004",g:"F"},
+ solan_mait:{n:"Solan Maître",b:"11.07.2009",g:"M"},
+ eva_mt:{n:"Eva Montavon",b:"07.07.2013",g:"F"},
+ loic_g:{n:"Loïc Girardin",b:"16.07.1999",g:"M"},
+ typhene:{n:"Typhène Girardin",b:"19.10.2001",g:"F"},
+ coline_g:{n:"Coline Girardin",b:"12.04.2005",g:"F"},
+ manoe:{n:"Manoé Girardin",b:"24.07.2013",g:"M"},
+ nathan_a:{n:"Nathan Aemisegger",b:"09.05.2002",g:"M"},
+ capucine:{n:"Capucine Aemisegger",b:"12.07.2004",g:"F"},
+ eliott_a:{n:"Eliott Aemisegger",b:"03.11.2007",g:"M"},
+ charlotte_a:{n:"Charlotte Aemisegger",b:"01.09.2012",g:"F"},
+ mya_a:{n:"Mya Aemisegger",b:"19.04.2017",g:"F"},
+ zoe_c:{n:"Zoé Crevoiserat",b:"25.08.2007",g:"F"},
+ arthur_c:{n:"Arthur Crevoiserat",b:"11.10.2009",g:"M"},
+ louis_c:{n:"Louis Crevoiserat",b:"22.10.2011",g:"M"},
+ xavier_m:{n:"Xavier Marchand",b:"28.11.2012",g:"M"},
+ maxym_m:{n:"Maxym Marchand",b:"21.03.2018",g:"M"},
+ dylan_b:{n:"Dylan Barthe",b:"09.05.1995",job:"Polymécanicien",g:"M"},
+ felicia_b:{n:"Félicia Barthe",b:"11.11.1997",job:"Bachelor Tourisme",g:"F"},
+ tess_g:{n:"Tess Grandjean",b:"16.03.2022",g:"F"},
+ jayden_z:{n:"Jayden Zamble Bie",b:"19.04.2017",g:"M"},
+ aaron_z:{n:"Aaron Zamble Bie",b:"18.10.2021",g:"M"},
+ gloria_v:{n:"Gloria Villard",b:"04.05.2017",g:"F"},
+ ryan_st:{n:"Ryan Stadelmann",b:"28.01.2015",g:"M"},
+ elise_st:{n:"Elise Stadelmann",b:"14.05.2018",g:"F"},
+ lya_st:{n:"Lya Stadelmann",b:"28.10.2018",g:"F"},
+ alizea_p:{n:"Alizéa Paupe",b:"25.09.2021",g:"F"},
+};
+
+const BRANCH={
+ ernest:{label:"Branche Ernest",color:"#185FA5",bg:"#E6F1FB",txt:"#0C447C"},
+ anna:{label:"Branche Anna",color:"#0F6E56",bg:"#E1F5EE",txt:"#085041"},
+ walter:{label:"Branche Walter",color:"#3B6D11",bg:"#EAF3DE",txt:"#27500A"},
+ max:{label:"Branche Max",color:"#534AB7",bg:"#EEEDFE",txt:"#3C3489"},
+ fritz:{label:"Branche Fritz",color:"#854F0B",bg:"#FAEEDA",txt:"#633806"},
+ jean:{label:"Branche Jean",color:"#993C1D",bg:"#FAECE7",txt:"#4A1B0C"},
+ willy:{label:"Branche Willy",color:"#993556",bg:"#FBEAF0",txt:"#4B1528"}
+};
+
+const F={
+ root:{c:["remy1","lina"],kids:["ernest","anna","walter","max","fritz","jean_sr","willy_sr"],branch:null},
+ ernest:{c:["ernest","berthe"],kids:["remy2","judith","jean2","marcel","lucien"],branch:"ernest"},
+ remy2:{c:["remy2","rosemarie"],kids:["frederic","katia"],branch:"ernest"},
+ judith:{c:["judith","henri_v"],kids:["nadia","carole"],branch:"ernest"},
+ carole:{c:["carole","michel_r"],kids:["lilou"],branch:"ernest"},
+ jean2:{c:["jean2","marlyse"],kids:["jacques","thomas_m2"],branch:"ernest",note:"Jean a eu Auguste avec Christine Leu (2ème épouse)"},
+ jean2b:{c:["jean2","christine_l"],kids:["auguste"],branch:"ernest"},
+ jacques:{c:["jacques","stephanie_c"],kids:["pierrot","leon","ermeline"],branch:"ernest"},
+ marcel:{c:["marcel","saiyud"],kids:["stephanie_l","david"],branch:"ernest"},
+ stephanie_l:{c:["stephanie_l","claudio_l"],kids:["luana_l","maeva_l"],branch:"ernest"},
+ lucien:{c:["lucien","armande"],kids:["julien_m","nicolas"],branch:"ernest"},
+ nicolas:{c:["nicolas","charlotte_br"],kids:["lorelie","lizea"],branch:"ernest"},
+ anna:{c:["anna","henry_sr"],kids:["rolf","henry_m","elisabeth","willy_m","madeleine_m","andre_m","lilianne_mt","rene_m"],branch:"anna"},
+ rolf:{c:["rolf","brigitte_al"],kids:["johannes","liliane_c","christina"],branch:"anna"},
+ liliane_c:{c:["liliane_c","jean_c"],kids:["romane","clement","noah_c"],branch:"anna"},
+ henry_m:{c:["henry_m"],kids:[],branch:"anna"},
+ elisabeth:{c:["elisabeth","joseph_st"],kids:["michele","colette","josy_st","christine_st","remy_st","pierre_st"],branch:"anna"},
+ michele:{c:["michele","pierreandre"],kids:["romain_mn","cindy_mn","ophelie"],branch:"anna"},
+ colette:{c:["colette"],kids:["audrey_v","tiffany_v"],branch:"anna"},
+ audrey_v:{c:["audrey_v","jacques_z"],kids:["jayden_z","aaron_z"],branch:"anna"},
+ tiffany_v:{c:["tiffany_v"],kids:["gloria_v"],branch:"anna"},
+ josy_st:{c:["josy_st","nadine_st"],kids:["danny_st","gaetan_st","jennifer_st","yann_st","marion_st"],branch:"anna"},
+ gaetan_st:{c:["gaetan_st"],kids:["ryan_st"],branch:"anna"},
+ jennifer_st:{c:["jennifer_st"],kids:["elise_st"],branch:"anna"},
+ yann_st:{c:["yann_st"],kids:["lya_st"],branch:"anna"},
+ christine_st:{c:["christine_st","philippe_g"],kids:["meygan"],branch:"anna"},
+ remy_st:{c:["remy_st","myriam_st"],kids:["jeremy_st","aurelie_st"],branch:"anna"},
+ pierre_st:{c:["pierre_st"],kids:[],branch:"anna"},
+ andre_m:{c:["andre_m"],kids:[],branch:"anna"},
+ willy_m:{c:["willy_m","mt_guerdat"],kids:["celine_p","anne_m","ludivine","chloe","alisee","thomas_marc"],branch:"anna"},
+ celine_p:{c:["celine_p","pascal_p"],kids:["camille_p","joel_p"],branch:"anna"},
+ joel_p:{c:["joel_p"],kids:["alizea_p"],branch:"anna"},
+ anne_m:{c:["anne_m","leo_dv"],kids:["tobias","colin","clementine"],branch:"anna"},
+ ludivine:{c:["ludivine","claude_piq"],kids:["melitine","matthieu"],branch:"anna"},
+ madeleine_m:{c:["madeleine_m","jeanpaul_j"],kids:["jeanbaptiste","sophie_j"],branch:"anna"},
+ jeanbaptiste:{c:["jeanbaptiste","celine_jb"],kids:["gwenaelle","elios","robin"],branch:"anna"},
+ sophie_j:{c:["sophie_j","christian_j"],kids:["tiago","sacha"],branch:"anna"},
+ lilianne_mt:{c:["lilianne_mt","roger_mt"],kids:["patricia","sandra_mait","maryline_m","fabrice_mt"],branch:"anna"},
+ patricia:{c:["patricia","sebastien_mah"],kids:["syrielle","ionas","candice"],branch:"anna"},
+ sandra_mait:{c:["sandra_mait","josue"],kids:["rayan_mait","elodie_mait","solan_mait"],branch:"anna"},
+ fabrice_mt:{c:["fabrice_mt"],kids:["eva_mt"],branch:"anna"},
+ rene_m:{c:["rene_m","josianne"],kids:["christelle_g","sylvie_a","sandrine_c","ludovic_m"],branch:"anna"},
+ christelle_g:{c:["christelle_g","fabrice_g"],kids:["loic_g","typhene","coline_g","manoe"],branch:"anna"},
+ sylvie_a:{c:["sylvie_a","jeanmarc_a"],kids:["nathan_a","capucine","eliott_a","charlotte_a","mya_a"],branch:"anna"},
+ sandrine_c:{c:["sandrine_c","raphael_c"],kids:["zoe_c","arthur_c","louis_c"],branch:"anna"},
+ ludovic_m:{c:["ludovic_m","veronique_m"],kids:["xavier_m","maxym_m"],branch:"anna"},
+ walter:{c:["walter","julia"],kids:["jeanpierre","irene"],branch:"walter"},
+ jeanpierre:{c:["jeanpierre","verene"],kids:["claudine_m","sylvie_b","noel"],branch:"walter"},
+ sylvie_b:{c:["sylvie_b","joel_b"],kids:["dylan_b","felicia_b"],branch:"walter"},
+ noel:{c:["noel","veronique_g"],kids:["marilie","lorine","natean","isaline"],branch:"walter"},
+ irene:{c:["irene","raphael_n"],kids:["hugues","fabrice_n","jacinthe","francois_n"],branch:"walter"},
+ hugues:{c:["hugues","blandine_i"],kids:["ocean","alizee_n"],branch:"walter"},
+ fabrice_n:{c:["fabrice_n","jocelyne_n"],kids:["manon_n","loris_n"],branch:"walter"},
+ francois_n:{c:["francois_n","selina"],kids:["antoine_n","leyla_n"],branch:"walter"},
+ max:{c:["max","jeanne"],kids:["jacqueline","madeleine_w","mt_mamie"],branch:"max"},
+ jacqueline:{c:["jacqueline","andre_w"],kids:["alain_w","denis_w","eric_w"],branch:"max"},
+ alain_w:{c:["alain_w","muriel"],kids:["thibault_w","laure_w"],branch:"max"},
+ denis_w:{c:["denis_w","maryline_w"],kids:["amelie_w","jeremy_w"],branch:"max"},
+ eric_w:{c:["eric_w","ruth_l"],kids:["luana_w","nicola_w"],branch:"max"},
+ madeleine_w:{c:["madeleine_w","fernand"],kids:["danielle_bw","sylvain_w"],branch:"max"},
+ sylvain_w:{c:["sylvain_w","patricia_wm"],kids:["meryl_w","elodie_w"],branch:"max"},
+ mt_mamie:{c:["mt_mamie","gerard_mamie"],kids:["corinne_mm","serge_mamie"],branch:"max"},
+ corinne_mm:{c:["corinne_mm","paul_mt"],kids:["fanny_mt","gaetan_mt","juliette_mt"],branch:"max"},
+ serge_mamie:{c:["serge_mamie","sandrine_mn"],kids:["nina_mamie","killian_mamie"],branch:"max"},
+ fritz:{c:["fritz","brigitte_fr"],kids:["joseph","pierre","michel","jeanmarie","gerard_m"],branch:"fritz"},
+ joseph:{c:["joseph","annemarie"],kids:["eric_m","julien_m2","marieeve"],branch:"fritz"},
+ eric_m:{c:["eric_m","roseli"],kids:["loic_m","yann_m","arwen","eowyn"],branch:"fritz"},
+ julien_m2:{c:["julien_m2","severine"],kids:["tommy","lea_m"],branch:"fritz"},
+ marieeve:{c:["marieeve","raphael_s"],kids:["laura_st","alyssa_st"],branch:"fritz"},
+ pierre:{c:["pierre","paulette"],kids:["daniel","christelle_m","sebastien_m"],branch:"fritz",note:"Pierre † avait aussi Marie-Jeanne Carnal (2ème épouse)"},
+ sebastien_m:{c:["sebastien_m","zineb"],kids:["evan_m","rayan_m"],branch:"fritz"},
+ michel:{c:["michel","helene"],kids:["jose","cosette","frederic_m2"],branch:"fritz"},
+ jose:{c:["jose","sandra_jose"],kids:["nolan","lola"],branch:"fritz"},
+ cosette:{c:["cosette","claude_marc"],kids:["charlene_h","cedric_h","patrice_h"],branch:"fritz",note:"Enfants du 1er mariage avec Damien Houlmann"},
+ charlene_h:{c:["charlene_h","julien_g"],kids:["tess_g"],branch:"fritz"},
+ frederic_m2:{c:["frederic_m2","nathalie_ex"],kids:["loris_m2","shanna"],branch:"fritz"},
+ jeanmarie:{c:["jeanmarie","yvonne"],kids:["alain_m","sylvie_f","richard","viviane"],branch:"fritz"},
+ alain_m:{c:["alain_m"],kids:["thomas_m3","david_m2"],branch:"fritz"},
+ sylvie_f:{c:["sylvie_f","dominique_f"],kids:["noe_f","jonas_f"],branch:"fritz"},
+ viviane:{c:["viviane","bertrand"],kids:["marcie"],branch:"fritz"},
+ gerard_m:{c:["gerard_m","monique"],kids:["sylvain_m2","corinne_j"],branch:"fritz"},
+ sylvain_m2:{c:["sylvain_m2"],kids:["arthur_m"],branch:"fritz"},
+ jean_sr:{c:["jean_sr","alice"],kids:["liliane_sch","mt_suppi","danielle","jeanclaude"],branch:"jean"},
+ liliane_sch:{c:["liliane_sch","hermann"],kids:["marc_s"],branch:"jean"},
+ marc_s:{c:["marc_s","valerie_s"],kids:["jasmine","ludovic_s"],branch:"jean"},
+ mt_suppi:{c:["mt_suppi","michel_suppi"],kids:["stephane_s","cynthia"],branch:"jean"},
+ stephane_s:{c:["stephane_s","anya"],kids:["simon_s","celien_s"],branch:"jean"},
+ cynthia:{c:["cynthia","andre_ct"],kids:["anael"],branch:"jean"},
+ danielle:{c:["danielle","leo"],kids:["oliver","mikael"],branch:"jean"},
+ mikael:{c:["mikael","vittoria"],kids:[],branch:"jean"},
+ oliver:{c:["oliver","ludmilla"],kids:["romy_t"],branch:"jean"},
+ jeanclaude:{c:["jeanclaude","daniele"],kids:["aurelie"],branch:"jean"},
+ willy_sr:{c:["willy_sr","lili"],kids:["francine","josette","claudine_b"],branch:"willy"},
+ josette:{c:["josette","claude_martin"],kids:["willy_martin","celine_riat","gilles_martin"],branch:"willy"},
+ willy_martin:{c:["willy_martin","carine_b"],kids:["loic_mt","lionel_martin","morane_martin","elise_martin"],branch:"willy"},
+ lionel_martin:{c:["lionel_martin"],kids:["sofia_martin"],branch:"willy"},
+ celine_riat:{c:["celine_riat","jacques_riat"],kids:["theo_riat","noe_riat","bruno_riat"],branch:"willy"},
+ gilles_martin:{c:["gilles_martin","estelle_b"],kids:["malo_martin","gael_martin"],branch:"willy"},
+ claudine_b:{c:["claudine_b","pierre_b"],kids:["fanny","renaud"],branch:"willy"},
+ fanny:{c:["fanny","tom_ds"],kids:["juliette_ds","lucie_ds"],branch:"willy"},
+ renaud:{c:["renaud","justine"],kids:["merlin_j"],branch:"willy"},
+};
+
+const BRANCHES=[
+ {id:"ernest", bk:"ernest", desc:"Marchand de bétail · Porrentruy",years:"1905–1986"},
+ {id:"anna",   bk:"anna",   desc:"Agricultrice · La Cernie",years:"1907–1993"},
+ {id:"walter", bk:"walter", desc:"Agriculteur · La Charmillotte",years:"1908–1979"},
+ {id:"max",    bk:"max",    desc:"Agriculteur · La Charmillotte",years:"1909–1995"},
+ {id:"fritz",  bk:"fritz",  desc:"Agriculteur · La Charmillotte",years:"1916–2001"},
+ {id:"jean_sr",bk:"jean",   desc:"Restaurateur · Le Col des Roches",years:"1919–1961"},
+ {id:"willy_sr",bk:"willy", desc:"Marchand de bétail · Montignez",years:"1921–1965"}
+];
+
+let stack=[];
+let current="root";
+
+function initials(name){
+ const parts=name.replace(/[†"]/g,"").replace(/\(.*?\)/g,"").trim().split(/\s+/).filter(x=>x.length>1&&!/^(ex|2ème|née|divorcés|divorcé|conjoint|conjointe)$/i.test(x));
+ if(!parts.length)return"?";
+ const first=parts[0][0]||"";
+ const last=parts[parts.length-1][0]||"";
+ return(first+last).toUpperCase();
+}
+
+function getAvatarStyle(id,branch){
+ const p=P[id];
+ if(!p)return{bg:"#E8E5DE",txt:"#8B8278"};
+ if(p.dead)return{bg:"#E8E5DE",txt:"#8B8278"};
+ const b=BRANCH[branch];
+ return b?{bg:b.bg,txt:b.color}:{bg:"#F5EDD6",txt:"#B8892A"};
+}
+
+function hasFamily(id){
+ return F[id]&&(F[id].kids.length>0||(F[id].c&&F[id].c.length>1));
+}
+
+function buildCard(id,branch,clickable){
+ const p=P[id];if(!p)return"";
+ const av=getAvatarStyle(id,branch);
+ const canClick=clickable&&hasFamily(id);
+ const isDeceased=!!p.dead;
+ let html=`<div class="card${isDeceased?" deceased":""}${canClick?" clickable":""}" ${canClick?`onclick="navigate('${id}')" onkeydown="if(event.key==='Enter')navigate('${id}')" tabindex="0" role="button" aria-label="Voir la famille de ${p.n}"`:""}>`;
+ if(canClick)html+=`<span class="card-arrow" aria-hidden="true">›</span>`;
+ html+=`<div class="avatar" style="background:${av.bg};color:${av.txt}">${initials(p.n)}</div>`;
+ html+=`<div class="card-name">${p.n}${isDeceased&&!p.n.includes("†")?" †":""}</div>`;
+ let dates="";
+ if(p.b&&p.d)dates=`${p.b} – ${p.d}`;
+ else if(p.b)dates=p.b;
+ else if(p.d)dates=`† ${p.d}`;
+ if(dates)html+=`<div class="card-dates">${dates}</div>`;
+ if(p.job)html+=`<div class="card-job">${p.job}</div>`;
+ if(!isDeceased&&(p.adr||p.email||p.tel)){
+  html+=`<div class="card-contact">`;
+  if(p.adr)html+=`<div>📍 ${p.adr}</div>`;
+  if(p.tel)html+=`<div>📞 ${p.tel}</div>`;
+  if(p.email)html+=`<div>✉️ <a href="mailto:${p.email}">${p.email}</a></div>`;
+  html+=`</div>`;
+ }
+ if(canClick)html+=`<div class="card-nav">Voir sa famille →</div>`;
+ html+=`</div>`;
+ return html;
+}
+
+function navigate(id){
+ if(!F[id])return;
+ stack.push(current);
+ current=id;
+ render();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function goBack(){
+ if(!stack.length)return;
+ current=stack.pop();
+ render();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function goHome(){
+ stack=[];current="root";
+ render();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function jumpBranch(key){
+ stack=["root"];
+ current=key;
+ render();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function buildBreadcrumb(){
+ let html=`<span class="crumb" onclick="goHome()" title="Accueil">Famille Métille</span>`;
+ for(let i=0;i<stack.length;i++){
+  const s=stack[i];if(s==="root")continue;
+  const fp=P[s];
+  if(fp){
+   const idx=i;
+   html+=`<span class="sep"> › </span><span class="crumb" onclick="(()=>{stack=stack.slice(0,${idx+1});current='${s}';render();window.scrollTo({top:0})})()">${fp.n.split(" ")[0]} ${fp.n.split(" ")[1]||""}</span>`;
+  }
+ }
+ const cp=P[current];
+ if(cp&&current!=="root"){
+  html+=`<span class="sep"> › </span><span class="current">${cp.n.split(" ")[0]} ${cp.n.split(" ")[1]||""}</span>`;
+ }
+ return html;
+}
+
+function render(){
+ const root=document.getElementById("root");
+ if(current==="root"){renderHome(root);return;}
+ const fam=F[current];
+ if(!fam){renderHome(root);return;}
+ const branch=fam.branch;
+ const br=BRANCH[branch];
+ const couple=fam.c||[];
+ const kids=fam.kids||[];
+
+ let coupleHTML="";
+ if(couple.length>=2){
+  coupleHTML=`<div class="couple-wrap">${buildCard(couple[0],branch,false)}<div class="union-sym">+</div>${buildCard(couple[1],branch,false)}</div>`;
+ } else if(couple.length===1){
+  coupleHTML=`<div class="single-wrap">${buildCard(couple[0],branch,false)}</div>`;
+ }
+
+ let kidsHTML="";
+ if(kids.length){
+  kidsHTML=`<div class="section-label">Enfants · ${kids.length} membre${kids.length>1?"s":""}</div><div class="children-grid">${kids.map(k=>buildCard(k,branch,true)).join("")}</div>`;
+ } else {
+  kidsHTML=`<div class="section-label">Enfants</div><p style="color:var(--gray);font-size:0.85rem;font-style:italic">Aucun enfant enregistré.</p>`;
+ }
+
+ root.innerHTML=`
+  <div class="nav-bar">
+   ${stack.length?`<button class="back-btn" onclick="goBack()">‹ Retour</button>`:""}
+   <button class="back-btn" onclick="goHome()">⌂ Accueil</button>
+   ${br?`<span class="branch-pill" style="background:${br.bg};color:${br.txt}">${br.label}</span>`:""}
+  </div>
+  <div class="breadcrumb" style="margin-bottom:1.5rem">${buildBreadcrumb()}</div>
+  ${fam.note?`<div class="note">${fam.note}</div>`:""}
+  <div class="section-label">Couple</div>
+  ${coupleHTML}
+  <hr class="divider">
+  ${kidsHTML}
+  <div style="margin-top:2.5rem;padding-top:1rem;border-top:1px solid var(--border);font-size:0.7rem;color:var(--gray);font-family:sans-serif">
+   Données au 06.10.2023 · <span class="home-btn" onclick="goHome()">Retour à l'accueil</span>
+  </div>`;
+}
+
+function renderHome(root){
+ root.innerHTML=`
+  <div class="home-intro">
+   <p>Cliquez sur une branche pour explorer la famille, puis sur chaque membre pour découvrir ses descendants.</p>
+  </div>
+  <div class="stats-row">
+   <div class="stat-box"><div class="stat-num">7</div><div class="stat-label">Branches</div></div>
+   <div class="stat-box"><div class="stat-num">5</div><div class="stat-label">Générations</div></div>
+   <div class="stat-box"><div class="stat-num">200+</div><div class="stat-label">Membres</div></div>
+   <div class="stat-box"><div class="stat-num">1872</div><div class="stat-label">Origine</div></div>
+  </div>
+  <div class="section-label">Les sept branches</div>
+  <div class="branches-grid">
+   ${BRANCHES.map(b=>`
+    <div class="branch-card" onclick="jumpBranch('${b.id}')" style="border-top:3px solid ${BRANCH[b.bk].color}">
+     <div class="branch-icon" style="background:${BRANCH[b.bk].bg};color:${BRANCH[b.bk].color}">${P[b.id].n.split(" ")[0][0]}</div>
+     <div class="branch-name">${P[b.id].n}</div>
+     <div class="branch-dates">${b.years}</div>
+     <div class="branch-desc">${b.desc}</div>
+     <div class="branch-link" style="color:${BRANCH[b.bk].color}">Explorer cette branche →</div>
+    </div>`).join("")}
+  </div>
+  <hr class="divider" style="margin:2.5rem 0">
+  <div class="section-label">Les fondateurs · 1ère génération</div>
+  <div class="founders">${buildCard("remy1",null,false)}<div class="union-sym">+</div>${buildCard("lina",null,false)}</div>
+  <div style="margin-top:3rem;text-align:center;font-size:0.75rem;color:var(--gray);font-family:sans-serif">
+   Arbre généalogique Famille Métille · Données au 06.10.2023
+  </div>`;
+}
+
+render();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CHATBOT AUTONOME — Famille Métille
+     Clé API stockée dans localStorage du navigateur.
+     ═══════════════════════════════════════════════════════════ -->
+<style>
+  #chat-fab {
+    position:fixed;bottom:24px;right:24px;z-index:9000;
+    width:56px;height:56px;border-radius:50%;
+    background:var(--accent);border:none;cursor:pointer;
+    box-shadow:0 4px 16px rgba(0,0,0,.25);
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .2s;
+  }
+  #chat-fab:hover{transform:scale(1.08);}
+  #chat-fab svg{width:26px;height:26px;fill:white;}
+  #chat-win{
+    position:fixed;bottom:90px;right:24px;z-index:9000;
+    width:370px;max-width:calc(100vw - 32px);
+    background:#fff;border-radius:16px;
+    box-shadow:0 8px 40px rgba(0,0,0,.18);
+    display:none;flex-direction:column;overflow:hidden;
+    font-family:sans-serif;font-size:14px;
+    border:1px solid var(--border);
+  }
+  #chat-win.open{display:flex;}
+  #chat-header{
+    background:var(--accent);color:#fff;
+    padding:14px 16px;display:flex;align-items:center;gap:10px;
+  }
+  #chat-header svg{width:20px;height:20px;fill:#fff;flex-shrink:0;}
+  #chat-htext{flex:1;}
+  #chat-htext strong{display:block;font-size:15px;}
+  #chat-htext span{font-size:11px;opacity:.85;}
+  #chat-close{background:none;border:none;color:#fff;cursor:pointer;font-size:22px;line-height:1;padding:0 4px;}
+  #chat-apizone{padding:12px 14px;background:#fdf8f0;border-bottom:1px solid var(--border);}
+  #chat-apizone label{font-size:11px;color:#666;display:block;margin-bottom:4px;}
+  #chat-apirow{display:flex;gap:6px;}
+  #chat-savebtn{padding:6px 12px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:12px;}
+  #chat-apimsg{font-size:11px;margin-top:4px;color:#888;}
+  #chat-apimsg.ok{color:#2a7a4f;}
+  #chat-apimsg.err{color:#c0392b;}
+  #chat-messages{flex:1;overflow-y:auto;padding:12px 12px 4px;display:flex;flex-direction:column;gap:8px;max-height:360px;min-height:160px;}
+  .cmsg{display:flex;gap:8px;align-items:flex-start;}
+  .cmsg.user{flex-direction:row-reverse;}
+  .cbubble{max-width:82%;padding:8px 12px;border-radius:14px;line-height:1.5;white-space:pre-wrap;font-size:13px;}
+  .cmsg.bot .cbubble{background:#f0ede8;color:#333;border-bottom-left-radius:4px;}
+  .cmsg.user .cbubble{background:var(--accent);color:#fff;border-bottom-right-radius:4px;}
+  .cav{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+  .cmsg.bot .cav{background:#e8e2da;color:var(--accent);}
+  .cmsg.user .cav{background:var(--accent);color:#fff;}
+  #chat-sugs{padding:6px 12px;display:flex;flex-wrap:wrap;gap:5px;}
+  .csug{background:#f0ede8;border:1px solid #ddd;border-radius:20px;padding:4px 10px;font-size:11px;cursor:pointer;color:#555;}
+  .csug:hover{background:#e0d8ce;}
+  #chat-inputrow{padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end;}
+  #chat-input{flex:1;border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:13px;resize:none;max-height:100px;font-family:inherit;outline:none;}
+  #chat-input:focus{border-color:var(--accent);}
+  #chat-sendbtn{width:36px;height:36px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  #chat-sendbtn:disabled{opacity:.4;cursor:default;}
+  #chat-sendbtn svg{width:16px;height:16px;fill:#fff;}
+</style>
+
+<button id="chat-fab" title="Assistant Famille Métille" onclick="chatToggle()">
+  <svg viewBox="0 0 24 24"><path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm-2 10H6V10h12v2zm0-3H6V7h12v2z"/></svg>
+</button>
+
+<div id="chat-win">
+  <div id="chat-header">
+    <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+    <div id="chat-htext">
+      <strong>Assistant Famille Métille</strong>
+      <span>Recherche · Parenté · Ajout de membres</span>
+    </div>
+    <button id="chat-close" onclick="chatToggle()">×</button>
+  </div>
+
+  <div id="chat-apizone" style="padding:10px 14px;background:#f0f7f0;border-bottom:1px solid var(--border);">
+    <div id="chat-apimsg" class="ok">🔒 Connexion sécurisée · Clé API protégée côté serveur</div>
+  </div>
+
+  <div id="chat-messages"></div>
+
+  <div id="chat-sugs">
+    <span class="csug" onclick="chatSug(this)">Enfants de Jean Métille ?</span>
+    <span class="csug" onclick="chatSug(this)">Lien Oliver ↔ Rémy ?</span>
+    <span class="csug" onclick="chatSug(this)">Branche Fritz complète</span>
+    <span class="csug" onclick="chatSug(this)">Comment ajouter un membre ?</span>
+  </div>
+
+  <div id="chat-inputrow">
+    <textarea id="chat-input" rows="1" placeholder="Posez votre question…" onkeydown="chatKey(event)"></textarea>
+    <button id="chat-sendbtn" onclick="chatSend()" disabled>
+      <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+(function(){
+  let history = [];
+
+  // ── Toggle ────────────────────────────────────────────────────────────────
+  let opened = false;
+  window.chatToggle = function(){
+    opened = !opened;
+    document.getElementById('chat-win').classList.toggle('open', opened);
+    if(opened && document.getElementById('chat-messages').children.length===0){
+      addMsg('bot','Bonjour ! Je connais toute la famille Métille. Posez-moi vos questions : liens de parenté, recherche de membres, ou comment ajouter quelqu'un à l'arbre.');
+    }
+  };
+
+  // ── Messages ──────────────────────────────────────────────────────────────
+  function addMsg(role,text){
+    const box=document.getElementById('chat-messages');
+    const wrap=document.createElement('div'); wrap.className='cmsg '+role;
+    const av=document.createElement('div'); av.className='cav';
+    av.textContent=role==='bot'?'M':'V';
+    const bub=document.createElement('div'); bub.className='cbubble';
+    bub.textContent=text;
+    wrap.appendChild(av); wrap.appendChild(bub);
+    box.appendChild(wrap);
+    box.scrollTop=box.scrollHeight;
+    return bub;
+  }
+  function addTyping(){
+    const box=document.getElementById('chat-messages');
+    const wrap=document.createElement('div'); wrap.className='cmsg bot'; wrap.id='ctyping';
+    const av=document.createElement('div'); av.className='cav'; av.textContent='M';
+    const bub=document.createElement('div'); bub.className='cbubble';
+    bub.style.opacity='.5'; bub.style.fontStyle='italic'; bub.textContent='…';
+    wrap.appendChild(av); wrap.appendChild(bub);
+    box.appendChild(wrap); box.scrollTop=box.scrollHeight;
+  }
+  function removeTyping(){ const el=document.getElementById('ctyping'); if(el)el.remove(); }
+
+  // ── Contexte famille ──────────────────────────────────────────────────────
+  function buildContext(){
+    let t='=== PERSONNES ===\n';
+    for(const[id,p]of Object.entries(P)){
+      const parts=[p.n];
+      if(p.b)parts.push('né '+p.b);
+      if(p.d)parts.push('† '+p.d);
+      if(p.job)parts.push(p.job);
+      if(p.adr)parts.push(p.adr);
+      if(p.tel)parts.push(p.tel);
+      t+=id+' | '+parts.join(' | ')+'\n';
+    }
+    t+='\n=== FAMILLES (couple + enfants + branche) ===\n';
+    for(const[id,f]of Object.entries(F)){
+      t+=id+' | couple:['+((f.c||[]).join(','))+'] | enfants:['+((f.kids||[]).join(','))+'] | branche:'+f.branch+'\n';
+    }
+    return t;
+  }
+
+  const SYSTEM=`Tu es l'assistant expert de l'arbre généalogique de la Famille Métille depuis 1872.
+Tu réponds toujours en français, de façon précise, chaleureuse et concise.
+Tu peux :
+1. Répondre aux questions sur les membres (dates, profession, adresse, téléphone)
+2. Expliquer les liens de parenté entre deux personnes en remontant l'arbre
+3. Pour ajouter un membre : montrer le code JS exact à insérer dans P{} et F{}
+4. Signaler les incohérences éventuelles
+
+Données complètes de la famille :
+${buildContext()}`;
+
+  // ── Envoi via Netlify Function (clé API sécurisée côté serveur) ───────────
+  async function doSend(text){
+    addMsg('user',text);
+    history.push({role:'user',content:text});
+    document.getElementById('chat-sendbtn').disabled=true;
+    addTyping();
+    try{
+      const res=await fetch('/.netlify/functions/chat',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1024,system:SYSTEM,messages:history})
+      });
+      const data=await res.json();
+      removeTyping();
+      if(data.error){
+        addMsg('bot','⚠️ Erreur : '+data.error.message);
+        history.pop();
+      } else {
+        const reply=data.content[0].text;
+        addMsg('bot',reply);
+        history.push({role:'assistant',content:reply});
+        if(history.length>20)history=history.slice(-20);
+      }
+    }catch(e){
+      removeTyping();
+      addMsg('bot','⚠️ Erreur réseau : '+e.message);
+      history.pop();
+    }
+    document.getElementById('chat-sendbtn').disabled=false;
+  }
+
+  window.chatSend=function(){
+    const inp=document.getElementById('chat-input');
+    const txt=inp.value.trim();
+    inp.value=''; inp.style.height='auto';
+    if(txt)doSend(txt);
+  };
+  window.chatSug=function(el){doSend(el.textContent);};
+  window.chatKey=function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();chatSend();}};
+
+  document.getElementById('chat-input').addEventListener('input',function(){
+    this.style.height='auto';
+    this.style.height=Math.min(this.scrollHeight,100)+'px';
+  });
+})();
+
+</body>
+</html>
