@@ -1070,13 +1070,15 @@ ${buildContext()}`;
     document.getElementById('chat-sendbtn').disabled=false;
   }
 
-  // Photo lightbox via event delegation
+  // Photo lightbox via event delegation (capture phase)
 document.addEventListener('click', function(e){
-  const img = e.target.closest('img.avatar-photo');
-  if(img && img.dataset.src){
+  if(e.target && e.target.tagName === 'IMG' && e.target.classList.contains('avatar-photo')){
     e.stopPropagation();
     e.preventDefault();
-    openLightbox(img.dataset.src, img.alt);
+    var src = e.target.getAttribute('data-src') || e.target.getAttribute('src');
+    var name = e.target.getAttribute('alt') || '';
+    openLightbox(src, name);
+    return false;
   }
 }, true);
 
