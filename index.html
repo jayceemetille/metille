@@ -736,7 +736,7 @@ function buildCard(id,branch,clickable){
  const isDeceased=!!p.dead;
  let html=`<div class="card${isDeceased?" deceased":""}${canClick?" clickable":""}" ${canClick?`onclick="navigate('${id}')" onkeydown="if(event.key==='Enter')navigate('${id}')" tabindex="0" role="button" aria-label="Voir la famille de ${p.n}"`:""}>`;
  if(canClick)html+=`<span class="card-arrow" aria-hidden="true">›</span>`;
- html+=`<div class="avatar-wrap"><img class="avatar-photo" src="Photos/${id}.jpg" alt="${p.n}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;object-position:top center;display:block;flex-shrink:0;cursor:zoom-in" onclick="event.stopPropagation();openLightbox('Photos/${id}.jpg',this.alt)" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="avatar" style="background:${av.bg};color:${av.txt};display:none">${initials(p.n)}</div></div>`;
+ html+=`<div class="avatar-wrap"><img class="avatar-photo" data-src="Photos/${id}.jpg" src="Photos/${id}.jpg" alt="${p.n}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;object-position:top center;display:block;flex-shrink:0;cursor:zoom-in" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="avatar" style="background:${av.bg};color:${av.txt};display:none">${initials(p.n)}</div></div>`;
  html+=`<div class="card-name">${p.n}${isDeceased&&!p.n.includes("†")?" †":""}</div>`;
  let dates="";
  if(p.b&&p.d)dates=`${p.b} – ${p.d}`;
@@ -1070,7 +1070,17 @@ ${buildContext()}`;
     document.getElementById('chat-sendbtn').disabled=false;
   }
 
-  window.chatSend=function(){
+  // Photo lightbox via event delegation
+document.addEventListener('click', function(e){
+  const img = e.target.closest('img.avatar-photo');
+  if(img && img.dataset.src){
+    e.stopPropagation();
+    e.preventDefault();
+    openLightbox(img.dataset.src, img.alt);
+  }
+}, true);
+
+window.chatSend=function(){
     const inp=document.getElementById('chat-input');
     const txt=inp.value.trim();
     inp.value=''; inp.style.height='auto';
