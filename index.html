@@ -185,6 +185,16 @@
     text-shadow:0 1px 4px rgba(0,0,0,.8);
   }
 
+
+  .avatar-photo.zoomed {
+    width:180px!important;height:180px!important;
+    border-radius:8px!important;
+    position:relative;z-index:100;
+    box-shadow:0 4px 20px rgba(0,0,0,.3);
+    cursor:zoom-out!important;
+  }
+  .zoom-btn { display:none!important; }
+
 </style>
 </head>
 <body>
@@ -736,16 +746,15 @@ function buildCard(id,branch,clickable){
  const isDeceased=!!p.dead;
  let html=`<div class="card${isDeceased?" deceased":""}${canClick?" clickable":""}" ${canClick?`onclick="navigate('${id}')" onkeydown="if(event.key==='Enter')navigate('${id}')" tabindex="0" role="button" aria-label="Voir la famille de ${p.n}"`:""}>`;
  if(canClick)html+=`<span class="card-arrow" aria-hidden="true">›</span>`;
- const photoId = "photo_"+id;
- html+=`<div class="avatar-wrap" style="position:relative">
-   <img id="${photoId}" class="avatar-photo" src="Photos/${id}.jpg" alt="${p.n}" 
-     style="width:48px;height:48px;border-radius:50%;object-fit:cover;object-position:top center;display:block;flex-shrink:0"
-     onerror="this.style.display='none';document.getElementById('btn_${id}').style.display='none';this.nextElementSibling.style.display='flex'">
+ html+=`<div class="avatar-wrap" style="position:relative;cursor:pointer" title="Cliquer pour agrandir">
+   <img class="avatar-photo" src="Photos/${id}.jpg" alt="${p.n}" 
+     style="width:48px;height:48px;border-radius:50%;object-fit:cover;object-position:top center;display:block;flex-shrink:0;transition:all .3s ease;cursor:zoom-in"
+     onmousedown="event.stopPropagation()"
+     onmouseup="event.stopPropagation()"
+     onclick="event.stopPropagation();event.preventDefault();this.classList.toggle('zoomed');return false;"
+     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
    <div class="avatar" style="background:${av.bg};color:${av.txt};display:none">${initials(p.n)}</div>
- </div>
- <button id="btn_${id}" class="zoom-btn" 
-   style="display:block;background:none;border:none;cursor:pointer;font-size:14px;color:var(--gold);padding:0;margin-top:2px;line-height:1"
-   onclick="(function(e){e.stopPropagation();e.preventDefault();var img=document.getElementById('${photoId}');if(img){var lb=document.getElementById('lightbox');document.getElementById('lightbox-img').src=img.src;document.getElementById('lightbox-caption').textContent=img.alt;lb.style.display='flex';document.body.style.overflow='hidden';}return false;})(event)">🔍</button>`;
+ </div>`;
  html+=`<div class="card-name">${p.n}${isDeceased&&!p.n.includes("†")?" †":""}</div>`;
  let dates="";
  if(p.b&&p.d)dates=`${p.b} – ${p.d}`;
