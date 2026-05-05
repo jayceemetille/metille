@@ -47,9 +47,9 @@
   .card.clickable:hover{border-color:var(--gold);transform:translateY(-2px)}
   .card.deceased{background:var(--gray-light);border-color:#DDD8D0}
   .card-arrow{position:absolute;top:12px;right:12px;font-size:1rem;color:var(--gold);opacity:0.7}
-  .avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:700;font-family:sans-serif;margin-bottom:12px;letter-spacing:0.02em}
-  .avatar-wrap{width:48px;height:48px;margin-bottom:12px;flex-shrink:0;overflow:hidden;border-radius:50%}
-  .avatar-photo{width:48px!important;height:48px!important;max-width:48px!important;max-height:48px!important;border-radius:50%;object-fit:cover;object-position:center top;border:2px solid var(--border);display:block}
+  .avatar{width:75px;height:75px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:700;font-family:sans-serif;margin-bottom:12px;letter-spacing:0.02em}
+  .avatar-wrap{width:75px;height:75px;margin-bottom:12px;flex-shrink:0;overflow:hidden;border-radius:50%}
+  .avatar-photo{width:75px!important;height:75px!important;border-radius:50%;object-fit:cover;object-position:center top;border:2px solid var(--border);display:block}
   .card-name{font-size:0.95rem;font-weight:600;line-height:1.35;margin-bottom:4px}
   .card-dates{font-size:0.75rem;color:var(--gray);margin-bottom:4px;font-family:sans-serif}
   .card-job{font-size:0.75rem;color:var(--gray);font-style:italic;margin-bottom:8px;line-height:1.4}
@@ -111,8 +111,8 @@
     .card-name{font-size:0.88rem}
     .card-dates,.card-job{font-size:0.7rem}
     .card-contact{font-size:0.67rem}
-    .avatar-wrap,.avatar{width:40px;height:40px;margin-bottom:8px}
-    .avatar-photo{width:40px;height:40px;border-radius:50%;object-fit:cover}
+    .avatar-wrap,.avatar{width:60px;height:60px;margin-bottom:8px}
+    .avatar-photo{width:60px;height:60px;border-radius:50%;object-fit:cover}
     .children-grid{grid-template-columns:1fr 1fr;gap:8px}
     .section-label{margin:1.2rem 0 0.7rem;font-size:0.65rem}
     #chat-win{width:calc(100vw - 16px);right:8px;bottom:80px;border-radius:12px}
@@ -186,14 +186,7 @@
   }
 
 
-  .avatar-photo.zoomed {
-    width:180px!important;height:180px!important;
-    border-radius:8px!important;
-    position:relative;z-index:100;
-    box-shadow:0 4px 20px rgba(0,0,0,.3);
-    cursor:zoom-out!important;
-  }
-  .zoom-btn { display:none!important; }
+
 
 </style>
 </head>
@@ -748,10 +741,8 @@ function buildCard(id,branch,clickable){
  if(canClick)html+=`<span class="card-arrow" aria-hidden="true">›</span>`;
  html+=`<div class="avatar-wrap" style="position:relative;cursor:pointer" title="Cliquer pour agrandir">
    <img class="avatar-photo" src="Photos/${id}.jpg" alt="${p.n}" 
-     style="width:48px;height:48px;border-radius:50%;object-fit:cover;object-position:top center;display:block;flex-shrink:0;transition:all .3s ease;cursor:zoom-in"
-     onmousedown="event.stopPropagation()"
-     onmouseup="event.stopPropagation()"
-     onclick="event.stopPropagation();event.preventDefault();this.classList.toggle('zoomed');return false;"
+     style="width:75px;height:75px;border-radius:50%;object-fit:cover;object-position:top center;display:block;flex-shrink:0"
+     onclick="event.stopPropagation()"
      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
    <div class="avatar" style="background:${av.bg};color:${av.txt};display:none">${initials(p.n)}</div>
  </div>`;
